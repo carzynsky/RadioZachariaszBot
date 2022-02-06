@@ -13,4 +13,8 @@ bot.on('ready', () => {
 
 bot.on('messageCreate', msg => messageCreate.messageCreateHandler(msg))
 
+bot.on('error', err => {
+    console.error(err.message)
+})
+
 bot.login(token)
