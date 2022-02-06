@@ -7,7 +7,6 @@ var servers = {}
 
 const player = createAudioPlayer();
 
-
 async function messageCreateHandler(msg){
     let nickname = msg.member.displayName
     switch(msg.content){
@@ -17,7 +16,7 @@ async function messageCreateHandler(msg){
             msg.reply(rndMsg)
             break
         case prefix + 'help':
-            msg.reply('Dostępne komendy:\n.siema\n\nKomendy wkrótce:\n.startradio\n.stopradio\n.pdf\n.uhhboy')
+            msg.reply('Dostępne komendy:\n.siema\n.startradio\n.stopradio\n.pauseradio\n.leaveradio\n\nKomendy wkrótce:\n.pdf\n.uhhboy')
             break
         case prefix + 'startradio':
 
@@ -29,12 +28,6 @@ async function messageCreateHandler(msg){
                         title: 'RadioZachariasz 12.15fm'
                     }
                 })
-
-                // const resource = createAudioResource('E:/discord/RadioZachariaszBot/resources/beat1.mp3', {
-                //     metadata:{
-                //         title: 'RadioZachariasz 12.15fm'
-                //     }
-                // })
 
                 player.play(resource)
                 server.dispatcher = connection.subscribe(player)
@@ -69,10 +62,10 @@ async function messageCreateHandler(msg){
                     adapterCreator: msg.guild.voiceAdapterCreator
                 })
 
-
+            // start from paused
             if(server.queue.length === 1){
-                if(server.dispatcher.player.status === 'paused'){
-                    server.dispatcher.plaer.play()
+                if(server.dispatcher.player.state.status === 'paused'){
+                    server.dispatcher.player.unpause()
                     msg.reply('RadioZachariasz wznowione!')
                     return
                 }
@@ -103,15 +96,20 @@ async function messageCreateHandler(msg){
             server.dispatcher.player.pause()
             msg.reply('RadioZachariasz zostało zapauzowane')
             break
+        case prefix + 'leaveradio':
+            var server = servers[msg.guild.id]
+            if(!server || server.queue.length === 0){
+                msg.reply('RadioZachariasz nie jest włączone!')
+                return
+            }
+            server.dispatcher.player.stop()
+            server.dispatcher.connection.destroy()
+            server.queue.shift()
+            msg.reply('Zamulacie...')
+            break
     }
 }
 
 module.exports = {
     messageCreateHandler
 }
-
-
-// .radio
-// queue should be max 1
-// if its something in the queue then don't add nothing
-// 
