@@ -38,6 +38,9 @@ async function messageCreateHandler(msg){
                     //connection.destroy()
                     server.queue.shift()
                 })
+                resource.playStream.on('error', () => {
+                    console.log(`Some error occured...`)
+                })
             }
 
             // check if user is in a voice channel
